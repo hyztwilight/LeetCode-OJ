@@ -1,0 +1,45 @@
+class Solution {
+public:
+    RandomListNode *copyRandomList(RandomListNode *head) {
+        
+        if(head==NULL)
+        return NULL;
+        
+        RandomListNode* ptr=head,*ptr2;
+        
+        while(ptr!=NULL)
+        {
+            RandomListNode* newN = new RandomListNode(ptr->label);
+            
+            newN->next=ptr->next;
+            ptr->next=newN;
+            ptr=ptr->next->next;
+        }
+        
+        ptr=head;
+        while(ptr!=NULL)
+        {
+            if(ptr->random)
+            ptr->next->random = ptr->random->next;
+            ptr=ptr->next->next;
+        }
+
+        RandomListNode* head2=head->next;
+        
+        ptr=head;
+        ptr2=head2;
+        while(ptr!=NULL)
+        {
+            
+            ptr->next=ptr->next->next;
+            ptr=ptr->next;
+            
+            if(ptr2->next)
+            {
+                ptr2->next=ptr2->next->next;
+                ptr2=ptr2->next;
+            }
+        }
+        return head2;
+    }
+};
