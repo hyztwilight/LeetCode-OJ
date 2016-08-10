@@ -1,0 +1,30 @@
+class LRUCache {
+public:
+    LRUCache(int capacity) : cap(capacity) {}
+
+    int get(int key) {
+        if (m.find(key) == m.end()) return -1;
+        KV kv = *m[key];
+        l.erase(m[key]);
+        m[key] = l.insert(l.end(), kv);
+        return m[key]->v;
+    }
+
+    void set(int key, int value) {
+        list<KV>::iterator it = l.insert(l.end(), KV(key, value));
+        if (m.find(key) != m.end()) l.erase(m[key]);
+        m[key] = it;
+        if (m.size() > cap) {
+            m.erase(l.front().k);
+            l.pop_front();
+        }
+    }
+
+    struct KV {
+        int k, v;
+        KV(int key, int val) : k(key), v(val) {}
+    };
+    list<KV> l;
+    unordered_map<int, list<KV>::iterator> m;
+    int cap;
+};
