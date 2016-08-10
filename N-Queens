@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<vector<string>>res;
+    bool check(vector<string> &strs, int row, int col, int n){
+        for(int i=row-1,cnt=1;i>=0;i--,cnt++){
+            if(strs[i][col]=='Q')//竖线
+                return false;
+            if(col-cnt>=0 && strs[i][col-cnt]=='Q')//左斜线
+                return false;
+            if(col+cnt<n  && strs[i][col+cnt]=='Q')//右斜线
+                return false;
+        }
+        return true;
+    }
+    void subsolve(vector<string> &strs, int row, int n){
+        if(row==n){
+            res.push_back(strs);
+            return;
+        }
+        for(int i=0;i<n;i++){
+            if(check(strs,row,i,n)){
+                strs[row][i]='Q';
+                subsolve(strs,row+1,n);
+                strs[row][i]='.';
+            }
+        }
+    }
+    vector<vector<string>> solveNQueens(int n) {
+        if(n==1){
+            vector<string>strs;
+            strs.push_back("Q");
+            res.push_back(strs);
+            return res;
+        }
+        if(n<4)
+            return res;
+        vector<string>strs(n,string(n, '.'));
+        subsolve(strs,0,n);
+        return res;
+    }
+};
