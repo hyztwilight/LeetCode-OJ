@@ -1,0 +1,62 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode(int x) : val(x), next(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    ListNode* mergeKLists(vector<ListNode*>& lists) {
+        if(lists.empty())
+            return NULL;
+        else if(lists.size()==1)
+            return lists[0];
+        ListNode node(0);
+        ListNode* tail = &node;
+        
+        loserTree = vector<int>(lists.size(), lists.size());
+        value = vector<int>(lists.size()+1, MINKEY);
+        for(int i=0;i<lists.size();i++)
+            setValue( i, (lists[i] ? lists[i]->val : MAXKEY) );
+            
+        create(lists.size());
+        
+        int min_index;
+        while( (min_index=getMinIndex()) != -1 ){
+            tail->next = lists[min_index];
+            tail = tail->next;
+            lists[min_index] = lists[min_index]->next;
+            setValue(min_index, (lists[min_index] ? lists[min_index]->val : MAXKEY));
+            adjust(min_index);
+        }
+        tail->next = NULL;
+        return node.next;
+    }
+private:
+    const int MAXKEY = 0x7fffffff;
+    const int MINKEY = 0x80000001;
+    vector<int> loserTree;
+    vector<int> value;
+    void create(int size){
+        for(int i=size-1;i>=0;i--)
+            adjust(i);
+    }
+    void setValue(int index, int data){
+        value[index] = data;
+    }
+    int getMinIndex(){
+        return value[loserTree[0]]==MAXKEY ? -1 : loserTree[0];
+    }
+    void adjust(int index){
+        for(int i=(index+loserTree.size())>>1 ; i>0 ; i = i>>1){
+            if(value[index] > value[loserTree[i]]){
+                index = index + loserTree[i];
+                loserTree[i] = index - loserTree[i];
+                index = index - loserTree[i];
+            }
+        }
+        loserTree[0] = index;
+    }
+};
